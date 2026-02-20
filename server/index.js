@@ -410,9 +410,16 @@ app.get('/callback', async (req, res) => {
 
   try {
     const tokenResponse = await exchangeSpotifyAuthCode(code);
-    const profile = await fetchSpotifyProfile(tokenResponse.data.access_token);
-    const hostName = profile.display_name || profile.id || 'Host';
-    const hostImage = profile.images?.[0]?.url || null;
+    let hostName = 'Host';
+    let hostImage = null;
+
+    try {
+      const profile = await fetchSpotifyProfile(tokenResponse.data.access_token);
+      hostName = profile.display_name || profile.id || 'Host';
+      hostImage = profile.images?.[0]?.url || null;
+    } catch (profileError) {
+      console.warn('⚠️ Host profile lookup failed, continuing with fallback host name:', profileError.response?.data || profileError.message);
+    }
 
     const roomId = generateRoomCode();
 
@@ -452,8 +459,11 @@ app.get('/callback', async (req, res) => {
     const baseUrl = process.env.PUBLIC_URL || 'http://localhost:5173';
     res.redirect(`${baseUrl}/host/${roomId}`);
   } catch (error) {
+    const spotifyError = error.response?.data?.error;
+    const spotifyDesc = error.response?.data?.error_description;
+    const detail = spotifyDesc || spotifyError || error.message || 'Authentication failed.';
     console.error('❌ Auth Error:', error.response?.data || error.message);
-    res.status(500).send('Authentication failed.');
+    res.status(500).send(`Authentication failed: ${detail}`);
   }
 });
 
