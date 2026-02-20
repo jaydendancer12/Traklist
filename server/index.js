@@ -74,7 +74,46 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchSpotifyProfileName(accessToken) {
+function isRetryableSpotifyStatus(status) {
+  return status === 429 || (status >= 500 && status < 600);
+}
+
+async function exchangeSpotifyAuthCode(code) {
+  let lastError = null;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await axios.post(
+        'https://accounts.spotify.com/api/token',
+        querystring.stringify({
+          code,
+          redirect_uri: process.env.REDIRECT_URI,
+          grant_type: 'authorization_code',
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization:
+              'Basic ' +
+              Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64'),
+          },
+        }
+      );
+    } catch (error) {
+      lastError = error;
+      const status = error?.response?.status;
+      const retryAfterHeader = Number(error?.response?.headers?.['retry-after'] || 0);
+      const retryDelay = retryAfterHeader > 0 ? retryAfterHeader * 1000 : 300 * (attempt + 1);
+
+      if (!isRetryableSpotifyStatus(status)) break;
+      await sleep(retryDelay);
+    }
+  }
+
+  throw lastError || new Error('Failed to exchange Spotify auth code');
+}
+
+async function fetchSpotifyProfile(accessToken) {
   let lastError = null;
 
   for (let attempt = 0; attempt < 4; attempt += 1) {
@@ -82,16 +121,15 @@ async function fetchSpotifyProfileName(accessToken) {
       const response = await axios.get('https://api.spotify.com/v1/me', {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      const profileName = response.data?.display_name || response.data?.id || '';
-      if (profileName) return profileName;
-      lastError = new Error('Profile name missing');
+      if (response.data) return response.data;
+      lastError = new Error('Profile payload missing');
     } catch (error) {
       lastError = error;
       const status = error?.response?.status;
       const retryAfterHeader = Number(error?.response?.headers?.['retry-after'] || 0);
       const retryDelay = retryAfterHeader > 0 ? retryAfterHeader * 1000 : 250 * (attempt + 1);
 
-      if (status === 401 || status === 403) {
+      if (status === 401 || status === 403 || !isRetryableSpotifyStatus(status)) {
         break;
       }
       await sleep(retryDelay);
@@ -99,6 +137,15 @@ async function fetchSpotifyProfileName(accessToken) {
   }
 
   throw lastError || new Error('Failed to load Spotify profile');
+}
+
+async function fetchSpotifyProfileName(accessToken) {
+  const profile = await fetchSpotifyProfile(accessToken);
+  const profileName = profile?.display_name || profile?.id || '';
+  if (!profileName) {
+    throw new Error('Profile name missing');
+  }
+  return profileName;
 }
 
 async function refreshRoomAccessToken(room) {
@@ -362,26 +409,10 @@ app.get('/callback', async (req, res) => {
   }
 
   try {
-    const tokenResponse = await axios.post(
-      'https://accounts.spotify.com/api/token',
-      querystring.stringify({
-        code,
-        redirect_uri: process.env.REDIRECT_URI,
-        grant_type: 'authorization_code',
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization:
-            'Basic ' +
-            Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64'),
-        },
-      }
-    );
-
-    const profileRes = await axios.get('https://api.spotify.com/v1/me', {
-      headers: { Authorization: `Bearer ${tokenResponse.data.access_token}` },
-    });
+    const tokenResponse = await exchangeSpotifyAuthCode(code);
+    const profile = await fetchSpotifyProfile(tokenResponse.data.access_token);
+    const hostName = profile.display_name || profile.id || 'Host';
+    const hostImage = profile.images?.[0]?.url || null;
 
     const roomId = generateRoomCode();
 
@@ -399,7 +430,7 @@ app.get('/callback', async (req, res) => {
           'HOST',
           {
             id: 'HOST',
-            name: profileRes.data.display_name || 'Host',
+            name: hostName,
             isHost: true,
             joinedAt: Date.now(),
             online: false,
@@ -410,13 +441,13 @@ app.get('/callback', async (req, res) => {
       pendingGuests: new Map(),
       hostSocketId: null,
       host: {
-        name: profileRes.data.display_name || 'Host',
-        image: profileRes.data.images?.[0]?.url || null,
+        name: hostName,
+        image: hostImage,
       },
       createdAt: Date.now(),
     });
 
-    console.log(`✅ Room ${roomId} created by ${profileRes.data.display_name}`);
+    console.log(`✅ Room ${roomId} created by ${hostName}`);
 
     const baseUrl = process.env.PUBLIC_URL || 'http://localhost:5173';
     res.redirect(`${baseUrl}/host/${roomId}`);
