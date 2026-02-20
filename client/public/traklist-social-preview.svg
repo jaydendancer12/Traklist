@@ -1,0 +1,35 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="96" y1="58" x2="1098" y2="576" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10131B"/>
+      <stop offset="1" stop-color="#050506"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1028 120) rotate(131.496) scale(426.77 393.018)">
+      <stop stop-color="#1DB954" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#1DB954" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(188 544) rotate(-30.8439) scale(450.386 307.335)">
+      <stop stop-color="#2DD4BF" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#2DD4BF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowA)"/>
+  <rect width="1200" height="630" fill="url(#glowB)"/>
+  <rect x="88" y="84" width="1024" height="462" rx="36" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.14)"/>
+  <rect x="122" y="154" width="78" height="78" rx="22" fill="rgba(29,185,84,0.15)"/>
+  <path d="M164 177c-14.912 0-27 12.088-27 27s12.088 27 27 27 27-12.088 27-27-12.088-27-27-27Zm12.375 39.05a1.688 1.688 0 0 1-2.317.563c-6.3-3.868-14.243-4.733-23.558-2.543a1.688 1.688 0 0 1-.768-3.287c10.22-2.392 19.013-1.395 26.1 3.006a1.687 1.687 0 0 1 .543 2.261Zm3.308-6.562a2.109 2.109 0 0 1-2.873.694c-7.224-4.455-18.226-5.756-26.774-3.172a2.109 2.109 0 1 1-1.215-4.04c9.744-2.95 21.891-1.475 30.193 3.633a2.11 2.11 0 0 1 .669 2.885Zm.292-6.885c-8.662-5.141-22.95-5.614-31.229-3.094a2.531 2.531 0 0 1-1.49-4.84c9.541-2.904 25.425-2.342 35.326 3.511a2.531 2.531 0 0 1-2.607 4.423Z" fill="#1ED760"/>
+  <text x="230" y="206" fill="#FFFFFF" font-size="74" font-family="Sora, Avenir Next, Segoe UI, sans-serif" font-weight="700" letter-spacing="-1.8">
+    Trak<tspan fill="#1ED760">list</tspan>
+  </text>
+  <text x="124" y="312" fill="#F3F4F6" font-size="44" font-family="Sora, Avenir Next, Segoe UI, sans-serif" font-weight="600" letter-spacing="-0.4">
+    Share one link. Run the room live.
+  </text>
+  <text x="124" y="370" fill="#A1A1AA" font-size="28" font-family="Sora, Avenir Next, Segoe UI, sans-serif" font-weight="500">
+    Hosted lobbies, room codes, and crowd-powered queue voting.
+  </text>
+  <rect x="124" y="423" width="296" height="66" rx="16" fill="rgba(29,185,84,0.18)" stroke="rgba(29,185,84,0.35)"/>
+  <text x="149" y="466" fill="#D0F8DE" font-size="25" font-family="Sora, Avenir Next, Segoe UI, sans-serif" font-weight="600">
+    Open Traklist
+  </text>
+</svg>

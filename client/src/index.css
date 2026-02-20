@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+iframe,
+audio,
+img,
+svg {
+  max-width: 100%;
+}
+
+body {
+  font-family: 'Sora', 'Avenir Next', 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at 20% 0%, #11141b 0%, #060607 46%, #050506 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+@media (max-width: 640px) {
+  .guest-approved-page {
+    width: 100dvw;
+    max-width: 100dvw;
+    overflow-x: clip;
+    overflow-y: auto;
+    touch-action: pan-y;
+    overscroll-behavior-x: none;
+  }
+
+  .guest-approved-page .mobile-shell {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow-x: clip;
+  }
+
+  .guest-approved-page * {
+    max-width: 100%;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2b2b2f;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a42;
+}
+
+::selection {
+  background: #1DB954;
+  color: #08100b;
+}

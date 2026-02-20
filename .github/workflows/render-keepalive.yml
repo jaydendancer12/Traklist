@@ -1,0 +1,20 @@
+name: Render Keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render health endpoint
+        env:
+          KEEPALIVE_URL: ${{ secrets.RENDER_KEEPALIVE_URL }}
+        run: |
+          URL="${KEEPALIVE_URL:-https://traklist.onrender.com}"
+          curl --fail --silent --show-error \
+            --retry 3 --retry-delay 2 \
+            --max-time 20 \
+            "$URL/healthz"

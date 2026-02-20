@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+server/.env
+server/.env.*
+!server/.env.example
+client/.env
+client/.env.*
+!client/.env.example
+
+# Local certs/keys
+*.pem
+*.key
+*.crt
+cert.pem
+key.pem
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
